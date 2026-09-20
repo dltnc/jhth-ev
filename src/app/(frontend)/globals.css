@@ -1,0 +1,368 @@
+@import 'tailwindcss';
+
+/* Tailwind v4 has no config file — scan the whole src tree for class names. */
+@source '../../';
+
+/* --------------------------------------------------------------------------
+   Design tokens — light theme, matching the approved design in `plan/`.
+   Green pair #1a6b3a / #14552f, white surfaces, #f6f8f7 section bands.
+   -------------------------------------------------------------------------- */
+@theme {
+  --color-bg: #ffffff;
+  --color-bg-subtle: #f6f8f7;
+  --color-card: #ffffff;
+  --color-surface-alt: #f5f7f6;
+  --color-surface-faint: #fafafa;
+
+  --color-fg: #1a1a1a;
+  --color-body: #555555;
+  --color-muted: #888888;
+  --color-faint: #aaaaaa;
+
+  --color-border: #e8eae9;
+  --color-border-soft: #eeeeee;
+  --color-border-strong: #e0e0e0;
+  --color-border-hover: #c8ddd0;
+
+  --color-accent: #1a6b3a;
+  --color-accent-hover: #14552f;
+  --color-accent-deep: #0d3d20;
+  --color-accent-tint: #e6f2ec;
+  --color-accent-light: #4ecb82;
+  --color-accent-fg: #ffffff;
+
+  --color-ink: #1a1a1a;
+  --color-ink-deep: #111111;
+
+  --font-display: 'Rajdhani', 'Hind Siliguri', system-ui, sans-serif;
+  --font-sans: 'Poppins', 'Hind Siliguri', system-ui, sans-serif;
+  --font-bangla: 'Hind Siliguri', 'Poppins', system-ui, sans-serif;
+
+  /* The design switches nav + grid layouts at 900px, not Tailwind's 1024px. */
+  --breakpoint-nav: 900px;
+
+  --shadow-card: 0 2px 12px rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 12px 40px rgb(0 0 0 / 0.12);
+  --shadow-soft: 0 8px 28px rgb(0 0 0 / 0.1);
+  --shadow-header: 0 2px 16px rgb(0 0 0 / 0.08);
+}
+
+/* Plain CSS variables too, so `var(--fg)` style usage keeps working. */
+:root {
+  --bg: var(--color-bg);
+  --bg-subtle: var(--color-bg-subtle);
+  --card: var(--color-card);
+  --surface-alt: var(--color-surface-alt);
+  --surface-faint: var(--color-surface-faint);
+  --fg: var(--color-fg);
+  --body: var(--color-body);
+  --muted: var(--color-muted);
+  --faint: var(--color-faint);
+  --border: var(--color-border);
+  --border-soft: var(--color-border-soft);
+  --border-strong: var(--color-border-strong);
+  --border-hover: var(--color-border-hover);
+  --accent: var(--color-accent);
+  --accent-hover: var(--color-accent-hover);
+  --accent-deep: var(--color-accent-deep);
+  --accent-tint: var(--color-accent-tint);
+  --accent-light: var(--color-accent-light);
+  --accent-fg: var(--color-accent-fg);
+  --ink: var(--color-ink);
+  --ink-deep: var(--color-ink-deep);
+  --header-h: 68px;
+  color-scheme: light;
+}
+
+/*
+ * Element resets live in `@layer base` on purpose. Unlayered CSS beats anything
+ * inside a cascade layer, so an unlayered `a { color: inherit }` would silently
+ * defeat every Tailwind text-colour utility on a link — the nav CTA rendered
+ * with inherited ink instead of `text-white`. Inside `base`, utilities win.
+ */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--bg);
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  html[lang='bn'] body {
+    font-family: var(--font-bangla);
+    line-height: 1.8;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+  }
+
+  html[lang='bn'] h1,
+  html[lang='bn'] h2,
+  html[lang='bn'] h3,
+  html[lang='bn'] h4 {
+    font-family: var(--font-bangla);
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-fg);
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 2px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Component classes used across the site
+   -------------------------------------------------------------------------- */
+.shell {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 30px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.btn-sm {
+  padding: 9px 16px;
+  font-size: 12px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-secondary {
+  background: #fff;
+  border-color: #ddd;
+  color: var(--fg);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Translucent CTA used over hero photography. */
+.btn-glass {
+  background: rgb(255 255 255 / 0.12);
+  border-color: rgb(255 255 255 / 0.25);
+  color: #fff;
+  backdrop-filter: blur(6px);
+}
+
+.btn-glass:hover {
+  background: rgb(255 255 255 / 0.2);
+}
+
+/* White CTA on a dark green band. */
+.btn-light {
+  background: #fff;
+  color: var(--accent);
+}
+
+.btn-light:hover {
+  background: var(--accent-tint);
+}
+
+.field {
+  width: 100%;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 6px;
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.field:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--body);
+}
+
+/* Small uppercase kicker above every section heading. */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Same kicker on the dark page headers, where green must lighten to read. */
+.eyebrow-light {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent-light);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 700;
+  line-height: 1.08;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 60px);
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+html[lang='bn'] .section-title,
+html[lang='bn'] .page-title {
+  font-family: var(--font-bangla);
+  line-height: 1.3;
+}
+
+/* Numeric display type: prices, spec values, stat counters. */
+.num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Entrance animations
+   -------------------------------------------------------------------------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.55s ease both;
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+
+.slide-in {
+  animation: slideIn 0.45s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
