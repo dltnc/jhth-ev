@@ -40,7 +40,7 @@ export default buildConfig({
       ],
     },
     meta: {
-      titleSuffix: ' · VoltRide CMS',
+      titleSuffix: 'JHTH EV',
     },
   },
   collections: [
@@ -79,5 +79,30 @@ export default buildConfig({
   cors: [serverURL],
   csrf: [serverURL],
   sharp,
-  plugins: [],
+  plugins: [
+      // ... your existing config
+  plugins: [
+    s3Storage({
+      collections: {
+        media: true, // Connects to your media collection slug
+        // Every object key starts with this "directory": provatalo/<file>.
+        prefix: 'provatalo',
+        generateFileURL: ({ filename, prefix }) => {
+        const key = prefix ? `${prefix}/${filename}` : filename
+        return `${process.env.R2_PUBLIC_URL}/${key}`
+      },
+      disablePayloadAccessControl: true,
+      },
+      bucket: process.env.R2_BUCKET!,
+      config: {
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+        },
+        endpoint: process.env.R2_ENDPOINT!, // e.g. https://<id>.r2.cloudflarestorage.com
+        region: 'auto', // Cloudflare R2 requires 'auto'
+        forcePathStyle: true, 
+      },
+    }),
+  ],
 })

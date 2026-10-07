@@ -30,6 +30,7 @@ export const Media: CollectionConfig = {
   ],
   upload: {
     // Responsive srcset sizes, per PRD §6.1. Sharp converts to WebP.
+    disableLocalStorage: true, // Absolutely mandatory for Netlify
     staticDir: 'public/media',
     formatOptions: {
       format: 'webp',
