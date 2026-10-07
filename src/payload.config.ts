@@ -4,6 +4,7 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 import { Bikes } from './collections/Bikes'
 import { Categories } from './collections/Categories'
@@ -86,7 +87,7 @@ export default buildConfig({
       collections: {
         media: true, // Connects to your media collection slug
         // Every object key starts with this "directory": provatalo/<file>.
-        prefix: 'provatalo',
+        prefix: 'jhth/media/',
         generateFileURL: ({ filename, prefix }) => {
         const key = prefix ? `${prefix}/${filename}` : filename
         return `${process.env.R2_PUBLIC_URL}/${key}`
