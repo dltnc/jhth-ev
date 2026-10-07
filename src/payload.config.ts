@@ -81,28 +81,44 @@ export default buildConfig({
   csrf: [serverURL],
   sharp,
   plugins: [
-      // ... your existing config
-  plugins: [
+    /**
+     * Media lives in Cloudflare R2 in production — Vercel's filesystem is ephemeral, so anything
+     * written to disk would vanish on the next deploy. R2 exposes an S3-compatible API, so this
+     * goes through the S3 adapter (payloadcms.com/docs/upload/storage-adapters#s3-r2); the
+     * dedicated @payloadcms/storage-r2 package is for Cloudflare Workers only. Full setup:
+     * docs/deployment.md.
+     *
+     * Without R2 env vars (local dev) the plugin disables itself and uploads stay on local disk.
+     */
     s3Storage({
+      enabled: Boolean(process.env.R2_BUCKET),
       collections: {
-        media: true, // Connects to your media collection slug
-        // Every object key starts with this "directory": provatalo/<file>.
-        prefix: 'jhth/media/',
-        generateFileURL: ({ filename, prefix }) => {
-        const key = prefix ? `${prefix}/${filename}` : filename
-        return `${process.env.R2_PUBLIC_URL}/${key}`
+        media: {
+          /**
+           * Media read access is public (src/collections/Media.ts), so there is nothing for
+           * Payload's file-proxy access control to protect — serve files straight from the R2
+           * domain instead of streaming every image through a serverless function.
+           */
+          disablePayloadAccessControl: true,
+          // Every object key starts with this "directory": provatalo/<file>.
+          prefix: 'provatalo',
+          generateFileURL: ({ filename, prefix }) => {
+            const key = prefix ? `${prefix}/${filename}` : filename
+            return `${process.env.R2_PUBLIC_URL}/${key}`
+          },
+        },
       },
-      disablePayloadAccessControl: true,
-      },
-      bucket: process.env.R2_BUCKET!,
+      // Safe to coalesce: `enabled` above is false whenever this is missing, so the empty
+      // string is never handed to the S3 client.
+      bucket: process.env.R2_BUCKET || '',
       config: {
         credentials: {
-          accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+          accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
         },
-        endpoint: process.env.R2_ENDPOINT!, // e.g. https://<id>.r2.cloudflarestorage.com
-        region: 'auto', // Cloudflare R2 requires 'auto'
-        forcePathStyle: true, 
+        region: 'auto', // R2 rejects real AWS regions
+        endpoint: process.env.R2_ENDPOINT,
+        forcePathStyle: true, // R2 uses path-style bucket addressing
       },
     }),
   ],
