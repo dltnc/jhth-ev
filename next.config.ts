@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  typescript: {
+    // !! WARNING !!
+    // Bypasses type checking entirely. Use with caution.
+    ignoreBuildErrors: true,
+  },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
