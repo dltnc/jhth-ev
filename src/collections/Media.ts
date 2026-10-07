@@ -30,6 +30,7 @@ export const Media: CollectionConfig = {
   ],
   upload: {
     // Responsive srcset sizes, per PRD §6.1. Sharp converts to WebP.
+    staticDir: 'public/media',
     formatOptions: {
       format: 'webp',
       options: { quality: 78 },
