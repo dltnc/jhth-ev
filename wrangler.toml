@@ -1,0 +1,23 @@
+name = "payload-cms-worker"
+main = ".open-next/worker.js"             # Output path of your Cloudflare bundler
+compatibility_date = "2026-10-05"         # Requires a modern date for advanced compatibility
+compatibility_flags = [ "nodejs_compat" ] # Grants Payload access to Node crypto/streams
+
+[vars]
+# Application URLs
+NEXT_PUBLIC_SERVER_URL = "http://localhost:3000" # Change to production domain when ready
+DATABASE_URL = "mongodb+srv://provat:y9soLEVBTDS5dIrH@dev.svajq.mongodb.net/ebike"
+PAYLOAD_SECRET = "bc472d4374e592fede793e12"
+
+# Cloudflare R2 Storage Configurations
+R2_BUCKET = "dltn"
+R2_PUBLIC_URL = "https://media.dailyprovatalo.com"
+R2_ENDPOINT = "https://318f9a16bdad3c4a7c7d1d8b3be2b9b9.r2.cloudflarestorage.com"
+
+# Bind your actual R2 bucket directly to the Worker
+[[r2_buckets]]
+binding = "payload_uploads"
+bucket_name = "dltn"
+
+[placement]
+mode = "off" # Crucial: Disables smart placement so worker won't move away from MongoDB connections
