@@ -37,5 +37,11 @@ export const Media: CollectionConfig = {
       { name: 'hero', width: 1920, height: undefined },
     ],
     mimeTypes: ['image/*', 'video/*', 'application/pdf'],
+    adminThumbnail: ({ doc }) => {
+      const sizes = doc.sizes as Record<string, { url?: null | string }> | undefined
+      return sizes?.thumbnail?.url ?? (doc.url as null | string | undefined) ?? null
+    },
+    focalPoint: true,
+    crop: true,
   },
 }
