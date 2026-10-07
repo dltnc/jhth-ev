@@ -101,7 +101,7 @@ export default buildConfig({
            */
           disablePayloadAccessControl: true,
           // Every object key starts with this "directory": provatalo/<file>.
-          prefix: 'provatalo',
+          prefix: 'jhth/media',
           generateFileURL: ({ filename, prefix }) => {
             const key = prefix ? `${prefix}/${filename}` : filename
             return `${process.env.R2_PUBLIC_URL}/${key}`
